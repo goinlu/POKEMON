@@ -2,95 +2,26 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Aniversario Pokémon - Edición Especial</title>
+    <title>Aniversario Pokémon - Colección Completa</title>
     <style>
-        body { 
-            background-color: #0f0f0f; 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            text-align: center; 
-            margin: 0; padding: 20px;
-            overflow-x: hidden;
-        }
-
+        /* Estilos anteriores mantenidos */
+        body { background-color: #0f0f0f; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; margin: 0; padding: 20px; overflow-x: hidden; }
         h1 { color: #f1c40f; text-shadow: 2px 2px #000; }
-
-        /* Animación del sobre */
-        .sobre { 
-            background: linear-gradient(135deg, #d32f2f, #b71c1c);
-            padding: 60px 40px; 
-            border-radius: 15px; 
-            cursor: pointer; 
-            display: inline-block; 
-            margin-top: 30px;
-            border: 5px solid #f1c40f; 
-            box-shadow: 0 0 25px rgba(241, 196, 15, 0.4);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        /* Clase que se activa al clicar */
-        .abriendo-sobre {
-            animation: romperSobre 0.8s forwards;
-            pointer-events: none;
-        }
-
-        @keyframes romperSobre {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1) rotate(5deg); filter: brightness(1.5); }
-            100% { transform: scale(0); opacity: 0; }
-        }
-
-        .contenedor-cartas { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 20px; 
-            margin-top: 30px; 
-        }
-
+        .sobre { background: linear-gradient(135deg, #d32f2f, #b71c1c); padding: 60px 40px; border-radius: 15px; cursor: pointer; display: inline-block; margin-top: 30px; border: 5px solid #f1c40f; box-shadow: 0 0 25px rgba(241, 196, 15, 0.4); transition: all 0.3s ease; }
+        .abriendo-sobre { animation: romperSobre 0.8s forwards; pointer-events: none; }
+        @keyframes romperSobre { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1) rotate(5deg); filter: brightness(1.5); } 100% { transform: scale(0); opacity: 0; } }
+        .contenedor-cartas { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px; }
         .carta-wrapper { position: relative; }
-
-        .carta { 
-            width: 230px; 
-            border-radius: 12px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
-            animation: aparecerCarta 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        /* Brillo plateado */
-        .carta-wrapper::after {
-            content: "";
-            position: absolute;
-            top: 0; left: -150%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-            transform: skewX(-25deg);
-            animation: brillo 2.5s infinite;
-        }
-
-        @keyframes aparecerCarta { 
-            from { opacity: 0; transform: translateY(50px) rotateY(90deg); } 
-            to { opacity: 1; transform: translateY(0) rotateY(0deg); } 
-        }
-
-        @keyframes brillo { 0% { left: -150%; } 100% { left: 150%; } }
-
-        .estrella {
-            position: absolute; width: 12px; height: 12px; background: #f1c40f;
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            z-index: 3; animation: parpadeo 1.2s infinite;
-        }
-
-        @keyframes parpadeo { 0%, 100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
-
-        #contador { font-size: 1.3rem; margin-bottom: 10px; font-weight: bold; color: #aaa; }
+        .carta { width: 230px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.8); animation: aparecerCarta 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes aparecerCarta { from { opacity: 0; transform: translateY(50px) rotateY(90deg); } to { opacity: 1; transform: translateY(0) rotateY(0deg); } }
         
-        button { 
-            padding: 15px 40px; font-size: 18px; cursor: pointer; background: #2ecc71; 
-            border: none; border-radius: 50px; color: white; margin-top: 30px; font-weight: bold;
-        }
-
+        /* Nueva Sección: Álbum de Colección */
+        .album-titulo { color: #ff4d94; margin-top: 50px; font-size: 2rem; border-top: 2px solid #333; padding-top: 20px; }
+        .carta-mini { width: 150px; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .carta-mini:hover { transform: scale(1.1); border-color: #f1c40f; }
+        .instruccion { font-style: italic; color: #aaa; margin-bottom: 20px; }
+        
+        button { padding: 15px 40px; font-size: 18px; cursor: pointer; background: #2ecc71; border: none; border-radius: 50px; color: white; margin-top: 30px; font-weight: bold; }
         .oculto { display: none; }
         .mensaje-final { background: #ff4d94 !important; }
     </style>
@@ -110,20 +41,21 @@
         <button id="btn-siguiente" class="oculto" onclick="siguienteSobre()">Siguiente Sobre</button>
     </div>
 
+    <div id="seccion-final" class="oculto">
+        <h2 class="album-titulo">❤️ Tu Álbum de Recuerdos ❤️</h2>
+        <p class="instruccion">Haz clic en cualquier carta para descargarla</p>
+        <div id="album-container" class="contenedor-cartas"></div>
+    </div>
+
     <script>
-        // LISTA ORDENADA (No se mezclará)
         let misCartas = [];
-        for (let i = 1; i <= 28; i++) {
-            misCartas.push(`${i}.png`);
-        }
+        for (let i = 1; i <= 28; i++) { misCartas.push(`${i}.png`); }
 
         let sobresAbiertos = 0;
 
         function iniciarApertura() {
             const sobre = document.getElementById('sobre-cerrado');
             sobre.classList.add('abriendo-sobre');
-
-            // Esperamos a que termine la animación del sobre para mostrar las cartas
             setTimeout(() => {
                 sobre.classList.add('oculto');
                 mostrarCartas();
@@ -134,7 +66,6 @@
             document.getElementById('resultado').classList.remove('oculto');
             const container = document.getElementById('cartas-container');
             container.innerHTML = "";
-            
             const inicio = sobresAbiertos * 4;
             const seleccion = misCartas.slice(inicio, inicio + 4);
 
@@ -143,26 +74,14 @@
                     const wrap = document.createElement('div');
                     wrap.className = 'carta-wrapper';
                     const img = document.createElement('img');
-                    img.src = url; 
-                    img.className = 'carta';
+                    img.src = url; img.className = 'carta';
                     wrap.appendChild(img);
-
-                    for(let s=0; s<3; s++) {
-                        const est = document.createElement('div');
-                        est.className = 'estrella';
-                        est.style.top = Math.random() * 80 + "%";
-                        est.style.left = Math.random() * 80 + "%";
-                        wrap.appendChild(est);
-                    }
                     container.appendChild(wrap);
 
-                    // Cuando sale la última carta del sobre, mostramos el botón de continuar
                     if(i === 3) {
-                        setTimeout(() => {
-                            document.getElementById('btn-siguiente').classList.remove('oculto');
-                        }, 500);
+                        setTimeout(() => { document.getElementById('btn-siguiente').classList.remove('oculto'); }, 500);
                     }
-                }, i * 400); // Salen una a una con ritmo
+                }, i * 400);
             });
 
             sobresAbiertos++;
@@ -172,7 +91,7 @@
                 const btn = document.getElementById('btn-siguiente');
                 btn.innerText = "❤️ ¡Feliz Aniversario uwu! ❤️";
                 btn.classList.add('mensaje-final');
-                btn.onclick = null;
+                btn.onclick = mostrarAlbum; // Al terminar, el botón activa el álbum
             }
         }
 
@@ -181,6 +100,29 @@
             document.getElementById('resultado').classList.add('oculto');
             const sobre = document.getElementById('sobre-cerrado');
             sobre.classList.remove('oculto', 'abriendo-sobre');
+        }
+
+        function mostrarAlbum() {
+            document.getElementById('resultado').classList.add('oculto');
+            document.getElementById('contador').classList.add('oculto');
+            document.getElementById('seccion-final').classList.remove('oculto');
+            
+            const albumContainer = document.getElementById('album-container');
+            
+            misCartas.forEach(url => {
+                // Creamos un enlace de descarga para cada carta
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Carta_Aniversario_${url}`; // Nombre con el que se guardará
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'carta-mini';
+                img.title = "Click para descargar";
+                
+                link.appendChild(img);
+                albumContainer.appendChild(link);
+            });
         }
     </script>
 </body>
