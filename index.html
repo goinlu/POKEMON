@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Aniversario Pokémon</title>
+    <style>
+        body { 
+            background-color: #0f0f0f; 
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { color: #f1c40f; text-shadow: 2px 2px #000; margin-bottom: 5px; }
+
+        .sobre { 
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            padding: 60px 40px; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            display: inline-block; 
+            margin-top: 30px;
+            border: 5px solid #f1c40f; 
+            box-shadow: 0 0 25px rgba(241, 196, 15, 0.4);
+            transition: all 0.3s ease;
+        }
+        .sobre:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(241, 196, 15, 0.7); }
+
+        .contenedor-cartas { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 20px; 
+            margin-top: 30px; 
+        }
+
+        .carta-wrapper { position: relative; }
+
+        .carta { 
+            width: 230px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            animation: aparecer 0.6s ease-out;
+            display: block;
+        }
+
+        /* Efecto de brillo plateado */
+        .carta-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -150%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+            transform: skewX(-25deg);
+            animation: brillo 2.5s infinite;
+        }
+
+        @keyframes aparecer { 
+            from { opacity: 0; transform: translateY(30px) scale(0.9); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+
+        @keyframes brillo { 
+            0% { left: -150%; } 
+            100% { left: 150%; } 
+        }
+
+        .estrella {
+            position: absolute; width: 12px; height: 12px; background: #f1c40f;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            z-index: 3; animation: parpadeo 1.2s infinite;
+        }
+
+        @keyframes parpadeo { 0%, 100% { transform: scale(0.7); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } }
+
+        #contador { font-size: 1.3rem; margin-bottom: 10px; font-weight: bold; color: #aaa; }
+        
+        button { 
+            padding: 15px 40px; font-size: 18px; cursor: pointer; background: #2ecc71; 
+            border: none; border-radius: 50px; color: white; margin-top: 30px; font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background: #27ae60; transform: scale(1.05); }
+
+        .oculto { display: none; }
+        .mensaje-final { background: #ff4d94 !important; cursor: default !important; }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Colección Especial de Aniversario ✨</h1>
+    <div id="contador">Paquetes por abrir: 7</div>
+
+    <div id="sobre-cerrado" class="sobre" onclick="abrirSobre()">
+        <h2>SOBRE POKÉMON</h2>
+        <p>Haz clic para revelar 4 cartas</p>
+    </div>
+
+    <div id="resultado" class="oculto">
+        <div id="cartas-container" class="contenedor-cartas"></div>
+        <button id="btn-siguiente" onclick="siguienteSobre()">Siguiente Sobre</button>
+    </div>
+
+    <script>
+        // Generamos la lista de imágenes del 1 al 28 con extensión .png
+        let misCartas = [];
+        for (let i = 1; i <= 28; i++) {
+            misCartas.push(`${i}.png`);
+        }
+
+        // Mezclar las cartas al azar
+        misCartas = misCartas.sort(() => 0.5 - Math.random());
+
+        let sobresAbiertos = 0;
+
+        function abrirSobre() {
+            document.getElementById('sobre-cerrado').classList.add('oculto');
+            document.getElementById('resultado').classList.remove('oculto');
+            
+            const container = document.getElementById('cartas-container');
+            container.innerHTML = "";
+
+            const inicio = sobresAbiertos * 4;
+            const seleccion = misCartas.slice(inicio, inicio + 4);
+
+            seleccion.forEach((url, i) => {
+                setTimeout(() => {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'carta-wrapper';
+                    
+                    const img = document.createElement('img');
+                    img.src = url; 
+                    img.className = 'carta';
+                    // Si alguna imagen no carga, avisará en la consola del navegador
+                    img.onerror = () => console.error("No se encontró la imagen: " + url);
+                    
+                    wrap.appendChild(img);
+
+                    for(let s=0; s<3; s++) {
+                        const est = document.createElement('div');
+                        est.className = 'estrella';
+                        est.style.top = Math.random() * 80 + "%";
+                        est.style.left = Math.random() * 80 + "%";
+                        wrap.appendChild(est);
+                    }
+
+                    container.appendChild(wrap);
+                }, i * 300);
+            });
+
+            sobresAbiertos++;
+            document.getElementById('contador').innerText = `Paquetes por abrir: ${7 - sobresAbiertos}`;
+
+            if (sobresAbiertos === 7) {
+                const btn = document.getElementById('btn-siguiente');
+                btn.innerText = "❤️ ¡Feliz Aniversario uwu! ❤️";
+                btn.classList.add('mensaje-final');
+                btn.onclick = null;
+            }
+        }
+
+        function siguienteSobre() {
+            document.getElementById('sobre-cerrado').classList.remove('oculto');
+            document.getElementById('resultado').classList.add('oculto');
+        }
+    </script>
+</body>
+</html>
