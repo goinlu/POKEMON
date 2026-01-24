@@ -32,4 +32,114 @@
             background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
             transform: skewX(-25deg); animation: brillo 2.5s infinite;
         }
-        @keyframes brillo { 0% { left: -150%; } 10
+        @keyframes brillo { 0% { left: -150%; } 100% { left: 150%; } }
+
+        .album-titulo { color: #ff4d94; margin-top: 50px; font-size: 2rem; }
+        .carta-mini { width: 150px; cursor: pointer; transition: 0.2s; margin: 10px; }
+        .carta-mini:hover { transform: scale(1.1); border: 2px solid #f1c40f; border-radius: 8px; }
+        
+        button { padding: 15px 40px; font-size: 18px; cursor: pointer; background: #2ecc71; border: none; border-radius: 50px; color: white; margin-top: 30px; font-weight: bold; }
+        .oculto { display: none; }
+        .mensaje-final { background: #ff4d94 !important; }
+        .instruccion-clic { color: #f1c40f; font-style: italic; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Colección de Aniversario ✨</h1>
+    <div id="contador">Paquete actual: 1 / 7</div>
+
+    <div id="sobre-cerrado" class="sobre" onclick="iniciarApertura()">
+        <h2>SOBRE POKÉMON</h2>
+        <p>Haz clic para abrir el paquete</p>
+    </div>
+
+    <div id="resultado" class="oculto">
+        <p id="guia-clic" class="instruccion-clic">Haz clic para sacar la siguiente carta...</p>
+        <div id="cartas-container" class="contenedor-cartas" onclick="sacarSiguienteCarta()"></div>
+        <button id="btn-siguiente" class="oculto" onclick="siguienteSobre()">Siguiente Sobre</button>
+    </div>
+
+    <div id="seccion-final" class="oculto">
+        <h2 class="album-titulo">❤️ Tu Álbum de Recuerdos ❤️</h2>
+        <p>Haz clic en cualquier carta para descargarla</p>
+        <div id="album-container" class="contenedor-cartas"></div>
+    </div>
+
+    <script>
+        let misCartas = [];
+        for (let i = 1; i <= 28; i++) { misCartas.push(`${i}.png`); }
+
+        let sobresAbiertos = 0;
+        let cartasMostradasEnSobreActual = 0;
+
+        function iniciarApertura() {
+            document.getElementById('sobre-cerrado').classList.add('abriendo-sobre');
+            setTimeout(() => {
+                document.getElementById('sobre-cerrado').classList.add('oculto');
+                document.getElementById('resultado').classList.remove('oculto');
+                document.getElementById('cartas-container').innerHTML = "";
+                cartasMostradasEnSobreActual = 0;
+                sacarSiguienteCarta(); // Saca la primera automáticamente
+            }, 800);
+        }
+
+        function sacarSiguienteCarta() {
+            if (cartasMostradasEnSobreActual >= 4) return;
+
+            const container = document.getElementById('cartas-container');
+            const totalIndice = (sobresAbiertos * 4) + cartasMostradasEnSobreActual;
+            const url = misCartas[totalIndice];
+
+            const wrap = document.createElement('div');
+            wrap.className = 'carta-wrapper';
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'carta';
+            wrap.appendChild(img);
+            container.appendChild(wrap);
+
+            cartasMostradasEnSobreActual++;
+
+            // Si ya han salido las 4 del sobre
+            if (cartasMostradasEnSobreActual === 4) {
+                document.getElementById('guia-clic').classList.add('oculto');
+                document.getElementById('btn-siguiente').classList.remove('oculto');
+                sobresAbiertos++;
+                
+                if (sobresAbiertos === 7) {
+                    const btn = document.getElementById('btn-siguiente');
+                    btn.innerText = "❤️ ¡Feliz Aniversario uwu! (Ver Álbum) ❤️";
+                    btn.classList.add('mensaje-final');
+                    btn.onclick = mostrarAlbum;
+                }
+            }
+        }
+
+        function siguienteSobre() {
+            document.getElementById('btn-siguiente').classList.add('oculto');
+            document.getElementById('resultado').classList.add('oculto');
+            document.getElementById('guia-clic').classList.remove('oculto');
+            document.getElementById('sobre-cerrado').classList.remove('oculto', 'abriendo-sobre');
+            document.getElementById('contador').innerText = `Paquete actual: ${sobresAbiertos + 1} / 7`;
+        }
+
+        function mostrarAlbum() {
+            document.getElementById('resultado').classList.add('oculto');
+            document.getElementById('contador').classList.add('oculto');
+            document.getElementById('seccion-final').classList.remove('oculto');
+            const albumContainer = document.getElementById('album-container');
+            misCartas.forEach(url => {
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Recuerdo_${url}`;
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'carta-mini';
+                link.appendChild(img);
+                albumContainer.appendChild(link);
+            });
+        }
+    </script>
+</body>
+</html>
