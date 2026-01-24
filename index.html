@@ -2,19 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Aniversario Pokémon</title>
+    <title>Aniversario Pokémon - Edición Especial</title>
     <style>
         body { 
             background-color: #0f0f0f; 
             color: white; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             text-align: center; 
-            margin: 0;
-            padding: 20px;
+            margin: 0; padding: 20px;
+            overflow-x: hidden;
         }
 
-        h1 { color: #f1c40f; text-shadow: 2px 2px #000; margin-bottom: 5px; }
+        h1 { color: #f1c40f; text-shadow: 2px 2px #000; }
 
+        /* Animación del sobre */
         .sobre { 
             background: linear-gradient(135deg, #d32f2f, #b71c1c);
             padding: 60px 40px; 
@@ -25,8 +26,20 @@
             border: 5px solid #f1c40f; 
             box-shadow: 0 0 25px rgba(241, 196, 15, 0.4);
             transition: all 0.3s ease;
+            position: relative;
         }
-        .sobre:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(241, 196, 15, 0.7); }
+
+        /* Clase que se activa al clicar */
+        .abriendo-sobre {
+            animation: romperSobre 0.8s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes romperSobre {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1) rotate(5deg); filter: brightness(1.5); }
+            100% { transform: scale(0); opacity: 0; }
+        }
 
         .contenedor-cartas { 
             display: flex; 
@@ -42,11 +55,10 @@
             width: 230px; 
             border-radius: 12px; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.8);
-            animation: aparecer 0.6s ease-out;
-            display: block;
+            animation: aparecerCarta 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Efecto de brillo plateado */
+        /* Brillo plateado */
         .carta-wrapper::after {
             content: "";
             position: absolute;
@@ -57,15 +69,12 @@
             animation: brillo 2.5s infinite;
         }
 
-        @keyframes aparecer { 
-            from { opacity: 0; transform: translateY(30px) scale(0.9); } 
-            to { opacity: 1; transform: translateY(0) scale(1); } 
+        @keyframes aparecerCarta { 
+            from { opacity: 0; transform: translateY(50px) rotateY(90deg); } 
+            to { opacity: 1; transform: translateY(0) rotateY(0deg); } 
         }
 
-        @keyframes brillo { 
-            0% { left: -150%; } 
-            100% { left: 150%; } 
-        }
+        @keyframes brillo { 0% { left: -150%; } 100% { left: 150%; } }
 
         .estrella {
             position: absolute; width: 12px; height: 12px; background: #f1c40f;
@@ -80,48 +89,52 @@
         button { 
             padding: 15px 40px; font-size: 18px; cursor: pointer; background: #2ecc71; 
             border: none; border-radius: 50px; color: white; margin-top: 30px; font-weight: bold;
-            transition: 0.3s;
         }
-        button:hover { background: #27ae60; transform: scale(1.05); }
 
         .oculto { display: none; }
-        .mensaje-final { background: #ff4d94 !important; cursor: default !important; }
+        .mensaje-final { background: #ff4d94 !important; }
     </style>
 </head>
 <body>
 
     <h1>✨ Colección Especial de Aniversario ✨</h1>
-    <div id="contador">Paquetes por abrir: 7</div>
+    <div id="contador">Sobres por abrir: 7</div>
 
-    <div id="sobre-cerrado" class="sobre" onclick="abrirSobre()">
+    <div id="sobre-cerrado" class="sobre" onclick="iniciarApertura()">
         <h2>SOBRE POKÉMON</h2>
-        <p>Haz clic para revelar 4 cartas</p>
+        <p>Haz clic para abrir</p>
     </div>
 
     <div id="resultado" class="oculto">
         <div id="cartas-container" class="contenedor-cartas"></div>
-        <button id="btn-siguiente" onclick="siguienteSobre()">Siguiente Sobre</button>
+        <button id="btn-siguiente" class="oculto" onclick="siguienteSobre()">Siguiente Sobre</button>
     </div>
 
     <script>
-        // Generamos la lista de imágenes del 1 al 28 con extensión .png
+        // LISTA ORDENADA (No se mezclará)
         let misCartas = [];
         for (let i = 1; i <= 28; i++) {
             misCartas.push(`${i}.png`);
         }
 
-        // Mezclar las cartas al azar
-        misCartas = misCartas.sort(() => 0.5 - Math.random());
-
         let sobresAbiertos = 0;
 
-        function abrirSobre() {
-            document.getElementById('sobre-cerrado').classList.add('oculto');
+        function iniciarApertura() {
+            const sobre = document.getElementById('sobre-cerrado');
+            sobre.classList.add('abriendo-sobre');
+
+            // Esperamos a que termine la animación del sobre para mostrar las cartas
+            setTimeout(() => {
+                sobre.classList.add('oculto');
+                mostrarCartas();
+            }, 800);
+        }
+
+        function mostrarCartas() {
             document.getElementById('resultado').classList.remove('oculto');
-            
             const container = document.getElementById('cartas-container');
             container.innerHTML = "";
-
+            
             const inicio = sobresAbiertos * 4;
             const seleccion = misCartas.slice(inicio, inicio + 4);
 
@@ -129,13 +142,9 @@
                 setTimeout(() => {
                     const wrap = document.createElement('div');
                     wrap.className = 'carta-wrapper';
-                    
                     const img = document.createElement('img');
                     img.src = url; 
                     img.className = 'carta';
-                    // Si alguna imagen no carga, avisará en la consola del navegador
-                    img.onerror = () => console.error("No se encontró la imagen: " + url);
-                    
                     wrap.appendChild(img);
 
                     for(let s=0; s<3; s++) {
@@ -145,13 +154,19 @@
                         est.style.left = Math.random() * 80 + "%";
                         wrap.appendChild(est);
                     }
-
                     container.appendChild(wrap);
-                }, i * 300);
+
+                    // Cuando sale la última carta del sobre, mostramos el botón de continuar
+                    if(i === 3) {
+                        setTimeout(() => {
+                            document.getElementById('btn-siguiente').classList.remove('oculto');
+                        }, 500);
+                    }
+                }, i * 400); // Salen una a una con ritmo
             });
 
             sobresAbiertos++;
-            document.getElementById('contador').innerText = `Paquetes por abrir: ${7 - sobresAbiertos}`;
+            document.getElementById('contador').innerText = `Sobres por abrir: ${7 - sobresAbiertos}`;
 
             if (sobresAbiertos === 7) {
                 const btn = document.getElementById('btn-siguiente');
@@ -162,8 +177,10 @@
         }
 
         function siguienteSobre() {
-            document.getElementById('sobre-cerrado').classList.remove('oculto');
+            document.getElementById('btn-siguiente').classList.add('oculto');
             document.getElementById('resultado').classList.add('oculto');
+            const sobre = document.getElementById('sobre-cerrado');
+            sobre.classList.remove('oculto', 'abriendo-sobre');
         }
     </script>
 </body>
